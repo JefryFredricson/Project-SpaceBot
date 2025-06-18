@@ -77,7 +77,7 @@ class Media:
         
 def photoSender(bot, message):
     date = isDate(message.text)
-    r = requests.get(f"https://api.nasa.gov/planetary/apod?api_key={Your_API_KEY}&date={date[2]}-{date[1]}-{date[0]}&thumbs=False")
+    r = requests.get(f"https://api.nasa.gov/planetary/apod?api_key={}&date={date[2]}-{date[1]}-{date[0]}&thumbs=False")
     if r.status_code != 200:
         print(r.status_code, r.headers)
         bot.reply_to(message, "Что-то пошло не так, возможно в другой раз")

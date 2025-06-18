@@ -39,17 +39,15 @@ class Users:
                 'ID': user.id,
                 'NAME': user.first_name,
                 'USERNAME': user.username,
-                'SUBSCRIPTION': True
+                'SUBSCRIPTION': False
             })
         return User({
             'ID': user.id,
             'NAME': user.first_name,
             'USERNAME': user.username,
-            'SUBSCRIPTION': True
+            'SUBSCRIPTION': False
         })
-    def delUser(self, user:TeleUser) -> User:
-        pass
-
+    
     def getUser(self, id:int) -> User:
         with open(self.filename, 'r', encoding='utf-8') as file:
             reader = csv.DictReader(file)
