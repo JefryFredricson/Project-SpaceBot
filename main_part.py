@@ -67,16 +67,16 @@ def subscription(message):
 def newsletter():
     users = users.getUsers()
     current_date = datetime.date.today().isoformat()
-    picture = Media.getFile(date=current_date)
+    picture = Media.getFile(date=tuple(map(int, current_date.split('-')))[::-1])
     for user in users:
-        sender_p = threading.Thread(target=photoSender, args=(bot, user.id,))
-        sender_p.start()
+        bot.send_photo(user, photo=picture[0], caption=picture[1])
 
 def checktime():
     schedule.every(24).hours.do(newsletter)
     while True:
         schedule.run_pending()
-        time.sleep(3600)
+        time.sleep(1)
+
 
 @bot.message_handler(commands=['apod'])
 def apod_by_date(message):
