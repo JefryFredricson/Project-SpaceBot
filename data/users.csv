@@ -1,0 +1,7 @@
+ID,NAME,USERNAME,SUBSCRIPTION
+0,JohnDoe,johndoe,false
+1,JaneSmith,janesmith,false
+2,AliceJohnson,alicej,true
+3,BobBrown,bobbrown,true
+4,CharlieDavis,charlied,false
+5,DavidWilson,,true
