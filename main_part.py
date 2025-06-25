@@ -12,7 +12,7 @@ from telebot import TeleBot, types
 from dotenv import load_dotenv
 
 from data.users import Users
-from data.Media import Media, isDate, photoSender
+from data.Media import Media, is_date, photo_sender
 
 
 API_KEY_NASA = 'YOUR_NASA_API_KEY'
@@ -38,8 +38,8 @@ def help(message):
 
 @bot.message_handler(commands=['subscription'])
 def subscription(message):
-    status = users.isUser(message.from_user.id)
-    sub_status = users.getStatus(message.from_user.id)
+    status = users.is_user(message.from_user.id)
+    sub_status = users.get_status(message.from_user.id)
     if status and sub_status:
         bot.send_message(message.from_user.id, "Вы подписаны на ежедневную рассылку")
     else:
@@ -47,35 +47,35 @@ def subscription(message):
 
 @bot.message_handler(commands=['subscribe'])
 def subscription(message):
-    status = users.isUser(message.from_user.id)
-    sub_status = users.getStatus(message.from_user.id)
+    status = users.is_user(message.from_user.id)
+    sub_status = users.get_status(message.from_user.id)
     if status and sub_status:
         bot.send_message(message.from_user.id, "Вы уже подписаны на ежедневную рассылку. "
                          "Подписываться еще раз необязательно:)"
                         )
     else:
         if not status:
-            users.addUser(message.from_user)
+            users.add_user(message.from_user)
         else:
-            users.returnUser(message.from_user.id)
+            users.return_user(message.from_user.id)
         bot.send_message(message.from_user.id, "Вы подписались на ежедневную рассылку")
 
 @bot.message_handler(commands=['unsubscribe'])
 def subscription(message):
-    status = users.isUser(message.from_user.id)
-    sub_status = users.getStatus(message.from_user.id)
+    status = users.is_user(message.from_user.id)
+    sub_status = users.get_status(message.from_user.id)
     if not(sub_status) or not(status):
         bot.send_message(message.from_user.id, "Вы уже отписались или еще не подписывались")
     else:
-        users.delUser(message.from_user.id)
+        users.del_user(message.from_user.id)
         bot.send_message(message.from_user.id, "Вы отписались от ежедневной рассылки")
 
 def newsletter():
-    users = users.getUsers()
+    users = users.get_users()
     current_date = datetime.date.today().isoformat()
-    picture = Media.getFile(date=current_date)
+    picture = Media.get_file(date=current_date)
     for user in users:
-        sender_p = threading.Thread(target=photoSender, args=(bot, user.id,))
+        sender_p = threading.Thread(target=photo_sender, args=(bot, user.id,))
         sender_p.start()
 
 def checktime():
@@ -87,7 +87,7 @@ def checktime():
 @bot.message_handler(commands=['apod'])
 def apod_by_date(message):
     parts = message.text.split(maxsplit=1)
-    if len(parts) != 2 or not isDate(parts[1]):
+    if len(parts) != 2 or not is_date(parts[1]):
         return bot.reply_to(
             message,
             "Неверный формат. Используй:\n/apod YYYY-MM-DD"
@@ -95,7 +95,7 @@ def apod_by_date(message):
 
     date_str = parts[1]
     media = Media('media.csv', 'images', bot, NASA_API_KEY)
-    result = media.getFile(tuple(map(int, date_str.split('-')))[::-1])
+    result = media.get_file(tuple(map(int, date_str.split('-')))[::-1])
 
     if not result:
         return bot.reply_to(message, "Не удалось получить картинку за эту дату.")
