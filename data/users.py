@@ -1,14 +1,34 @@
 from dataclasses import dataclass
 import os
 import csv
-from telebot.types import User as TeleUser
 
+from telebot.types import User as TeleUser
 
 
 @dataclass
 class User:
+    """
+    Класс для представления пользователя.
+
+    Атрибуты:
+        id (int): Идентификатор пользователя.
+        name (str): Имя пользователя.
+        username (str): Имя пользователя в Telegram.
+        subscription (bool): Статус подписки.
+    """
     
-    def __init__(self, data:dict):
+    id: int
+    name: str
+    username: str
+    subscription: bool
+    
+    def __init__(self, data: dict):
+        """
+        Инициализация пользователя с данными.
+
+        Аргументы:
+            data (dict): Словарь с данными пользователя.
+        """
         if data is None:
             raise ValueError("Data cannot be None")
         if 'ID' in data:
@@ -19,22 +39,33 @@ class User:
             self.username = data['USERNAME']
         if 'SUBSCRIPTION' in data:
             self.subscription = bool(data['SUBSCRIPTION'])
-    id: int
-    name: str
-    username: str
-    subscription: bool
+  
 
     def __str__(self):
         return f"{self.id} {self.name} ({self.subscription})"
 
 class Users:
+    """
+    Класс для работы с пользователями.
+    """
     filename: str
     def __init__(self, filename):
         self.filename = os.path.join(os.path.dirname(__file__), filename)
             
-    def addUser(self, user:TeleUser) -> User:
+    def add_user(self, user: TeleUser) -> User:
+        """
+        Добавляет нового пользователя в систему.
+
+        Аргументы:
+            user (TeleUser): объект Telegram User
+
+        Возвращает:
+            User: созданный объект пользователя
+        """
         with open(self.filename, 'a', encoding='utf-8') as file:
-            writer = csv.DictWriter(file, fieldnames=['ID', 'NAME', 'USERNAME', 'SUBSCRIPTION'])
+            writer = csv.DictWriter(
+                file, fieldnames=['ID', 'NAME', 'USERNAME', 'SUBSCRIPTION']
+            )
             writer.writerow({
                 'ID': user.id,
                 'NAME': user.first_name,
@@ -48,7 +79,16 @@ class Users:
             'SUBSCRIPTION': True
         })
     
-    def getUser(self, id:int) -> User:
+    def get_user(self, id:int) -> User:
+        """
+        Получает пользователя по ID.
+
+        Аргументы:
+            user_id (int): Идентификатор пользователя.
+
+        Возвращает:
+            Optional[User]: Объект пользователя или None.
+        """
         with open(self.filename, 'r', encoding='utf-8') as file:
             reader = csv.DictReader(file)
             for row in reader:
@@ -57,7 +97,16 @@ class Users:
                     return User(row)
         return None
 
-    def getStatus(self, id:int) -> User:
+    def get_status(self, id:int) -> User:
+        """
+        Получает статус подписки пользователя.
+
+        Аргументы:
+            user_id (int): Идентификатор пользователя.
+
+        Возвращает:
+            bool: True, если подписан, иначе False.
+        """
         with open(self.filename, 'r', encoding='utf-8') as file:
             reader = csv.DictReader(file)
             for row in reader:
@@ -68,7 +117,16 @@ class Users:
                     return False
         return None
     
-    def isUser(self, id:int) -> bool:
+    def is_user(self, id:int) -> bool:
+        """
+        Проверяет наличие пользователя по ID.
+
+        Аргументы:
+            user_id (int): Идентификатор пользователя.
+
+        Возвращает:
+            bool: True, если пользователь найден, иначе False.
+        """
         with open(self.filename, 'r', encoding='utf-8') as file:
             reader = csv.DictReader(file)
             for row in reader:
@@ -76,7 +134,13 @@ class Users:
                     return True
         return False
 
-    def getUsers(self) -> list[int]:
+    def get_users(self) -> list[int]:
+        """
+        Возвращает список ID всех подписанных пользователей.
+
+        Возвращает:
+            list[int]: Список идентификаторов.
+        """
         ids = []
         with open(self.filename, 'r', encoding='utf-8', newline='') as file:
             reader = csv.DictReader(file)
@@ -85,7 +149,16 @@ class Users:
                     ids.append(int(row['ID']))
         return ids
 
-    def delUser(self, user_id: int) -> bool:
+    def del_user(self, user_id: int) -> bool:
+        """
+        Отписывает пользователя (меняет статус подписки на False).
+
+        Аргументы:
+            user_id (int): Идентификатор пользователя.
+
+        Возвращает:
+            bool: True, если обновление прошло успешно.
+        """
         updated = False
         rows = []
         with open(self.filename, 'r', encoding='utf-8', newline='') as file:
@@ -99,12 +172,23 @@ class Users:
 
         if updated:
             with open(self.filename, 'w', encoding='utf-8', newline='') as file:
-                writer = csv.DictWriter(file, fieldnames=['ID', 'NAME', 'USERNAME', 'SUBSCRIPTION'])
+                writer = csv.DictWriter(
+                    file, fieldnames=['ID', 'NAME', 'USERNAME', 'SUBSCRIPTION']
+                )
                 writer.writeheader()
                 writer.writerows(rows)
         return updated
 
-    def returnUser(self, user_id: int) -> bool:
+    def return_user(self, user_id: int) -> bool:
+        """
+        Восстанавливает подписку пользователя.
+
+        Аргументы:
+            user_id (int): Идентификатор пользователя.
+
+        Возвращает:
+            bool: True, если подписка была восстановлена.
+        """
         updated = False
         rows = []
         with open(self.filename, 'r', encoding='utf-8', newline='') as file:
@@ -117,7 +201,9 @@ class Users:
 
         if updated:
             with open(self.filename, 'w', encoding='utf-8', newline='') as file:
-                writer = csv.DictWriter(file, fieldnames=['ID', 'NAME', 'USERNAME', 'SUBSCRIPTION'])
+                writer = csv.DictWriter(
+                    file, fieldnames=['ID', 'NAME', 'USERNAME', 'SUBSCRIPTION']
+                )
                 writer.writeheader()
                 writer.writerows(rows)
         return updated
@@ -125,4 +211,4 @@ class Users:
 
 if __name__ == "__main__":
     users = Users('users.csv')
-    print(users.getUser(2))
+    print(users.get_user(2))
