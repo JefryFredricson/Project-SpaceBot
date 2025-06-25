@@ -1,19 +1,19 @@
 import os
-from dotenv import load_dotenv
 import json
 import threading
 import datetime
 import schedule
 import time
-
 import asyncio
+import re
+import requests
+
 from telebot import TeleBot, types
+from dotenv import load_dotenv
 
 from data.users import Users
 from data.Media import Media, isDate, photoSender
 
-import requests
-import re
 
 API_KEY_NASA = 'YOUR_NASA_API_KEY'
 API_KEY_TG = 'YOUR_TG_KEY'
@@ -24,11 +24,17 @@ users = Users('users.csv')
 
 @bot.message_handler(commands=['start'])
 def start(message):
-    bot.send_message(message.from_user.id, "Привет, я SpaceBot! Моя задача заключается в том, чтобы показывать любителям космоса лучшие фотографии с ним связанные")
+    bot.send_message(message.from_user.id, "Привет, я SpaceBot! "
+                     "Моя задача заключается в том, чтобы показывать любителям "
+                     "космоса лучшие фотографии с ним связанные"
+                    )
 
 @bot.message_handler(commands=['help'])
 def help(message):
-    bot.send_message(message.from_user.id, "Ввода в команды subscription, subscribe, unsubscribe не требуется. Для команды apod требуется параметр даты в формате YYYY-MM-DD(например, 2025-10-05)")
+    bot.send_message(message.from_user.id, "Ввода в команды subscription, subscribe, "
+                     "unsubscribe не требуется. Для команды apod требуется параметр "
+                     "даты в формате YYYY-MM-DD(например, 2025-10-05)"
+                    )
 
 @bot.message_handler(commands=['subscription'])
 def subscription(message):
@@ -44,15 +50,15 @@ def subscription(message):
     status = users.isUser(message.from_user.id)
     sub_status = users.getStatus(message.from_user.id)
     if status and sub_status:
-        bot.send_message(message.from_user.id, "Вы уже подписаны на ежедневную рассылку. Подписываться еще раз необязательно:)")
+        bot.send_message(message.from_user.id, "Вы уже подписаны на ежедневную рассылку. "
+                         "Подписываться еще раз необязательно:)"
+                        )
     else:
         if not status:
             users.addUser(message.from_user)
         else:
             users.returnUser(message.from_user.id)
         bot.send_message(message.from_user.id, "Вы подписались на ежедневную рассылку")
-
-
 
 @bot.message_handler(commands=['unsubscribe'])
 def subscription(message):
