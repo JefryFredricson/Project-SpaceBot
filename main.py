@@ -1,19 +1,22 @@
 import os
-from dotenv import load_dotenv
 import json
 import threading
-
 import asyncio
-from telebot import TeleBot
-
-from data.users import Users
-
 import requests
 import re
 
-def photoSender(bot, message):
-    date = isDate(message.text)
-    r = requests.get(f"https://api.nasa.gov/planetary/apod?api_key={NASA_API_KEY}&date={date[2]}-{date[1]}-{date[0]}&thumbs=False")
+from telebot import TeleBot
+from dotenv import load_dotenv
+
+from data.users import Users
+
+
+def photo_sender(bot, message):
+    date = is_date(message.text)
+    r = requests.get(
+        f"https://api.nasa.gov/planetary/apod?api_key={NASA_API_KEY}"
+        f"&date={date[2]}-{date[1]}-{date[0]}&thumbs=False"
+    )
     if r.status_code != 200:
         print(r.status_code, r.headers)
         bot.reply_to(message, "Что-то пошло не так, возможно в другой раз")
@@ -53,21 +56,21 @@ if __name__ == "__main__":
     bot = TeleBot(TOKEN)
     users = Users('users.csv')
     
-    @bot.message_handler(func=lambda message: not isDate(message.text) is False, content_types=['text'])
+    @bot.message_handler(func=lambda message: not is_date(message.text) is False, content_types=['text'])
     def echo_message(message):
         bot.send_message(message.chat.id, "Ода, это дата!")
         
-        sender_p = threading.Thread(target=photoSender, args=(bot, message, ))
+        sender_p = threading.Thread(target=der, args=(bot, message, ))
         sender_p.start()
-        print(isDate(message.text))
+        print(is_date(message.text))
     
-    @bot.message_handler(func=lambda message: users.isUser(message.from_user.id) is True, content_types=['text'])
+    @bot.message_handler(func=lambda message: users.is_user(message.from_user.id) is True, content_types=['text'])
     def echo_message(message):
         print("Old лох")
         bot.send_message(message.chat.id, "Вы подписаны на бота!")
     
     
-    @bot.message_handler(func=lambda message: users.isUser(message.from_user.id) is False, content_types=['text'])
+    @bot.message_handler(func=lambda message: users.is_user(message.from_user.id) is False, content_types=['text'])
     def echo_message(message):
         print("New лох")
         bot.send_message(message.chat.id, "Вы не подписаны на бота")
