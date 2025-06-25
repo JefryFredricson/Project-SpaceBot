@@ -4,8 +4,10 @@ import requests
 class NASA_pic:
     def __init__(self, date):  # <-- Добавлен параметр даты
         self.appid = "ieF88kdVvaGmzuMt0aLBCN6kVZ2J0ZVystXhgBrt"
-        self.url = f"https://api.nasa.gov/planetary/apod?api_key={self.appid}&date={date}"  # <-- Используем переданную дату
-        
+        self.url = (
+            f"https://api.nasa.gov/planetary/apod?api_key={self.appid}"
+            f"&date={date}"  # <-- Используем переданную дату
+        )
         # Выполнение запроса и обработка данных
         self.response = requests.get(self.url)
         self.posts = self.response.json()
